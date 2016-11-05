@@ -1,0 +1,50 @@
+﻿body {
+	background-image: url('./flickr-tonio_vega-6014538718.jpg');
+	background-repeat: no-repeat;
+	background-color: rgb(255, 242, 225);
+}
+
+@media (min-width: 640px) { /* Large screen */
+	body { background-size: cover; }
+	.box {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 500px;
+		transform: translate(-50%, -50%);
+		padding: 2em 3em 3em 4em;
+		background-color: rgba(255, 255, 255, 0.6);
+	}
+}
+
+@media (max-width: 640px) { /*Small screen*/
+	body { background-size: 640px auto; }
+	.box {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		padding: 2em 2em 3em 3em;
+		background-color: rgba(255, 255, 255, 0.6);
+	}
+}
+
+hr { border: 0; border-top: 1px solid white; margin-left: -1em;}
+h3 { margin-left: -1em; }
+a { text-decoration: none; }
+.btn {
+	background-color: white;
+	padding: 5px 10px;
+	margin-top: -5px;
+}
+
+.hide {display:none;}
+.right {float:right;}
+
+/*#pn {
+  float: left;
+  margin-right: 0.5em;
+  white-space: nowrap;
+  width: 12em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}*/

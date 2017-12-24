@@ -455,7 +455,7 @@ elseif ($rand_num) {?>
 <?php
 }
 ?>
-		<a class='btn right' href='yulify.html'>&lt; 돌아가기</a>
+		<a class='btn right' href='index.html'>&lt; 돌아가기</a>
 	</div>
 </body>
 </html>

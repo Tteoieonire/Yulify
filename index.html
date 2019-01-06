@@ -63,7 +63,7 @@ function checkExt(el) {
 
         var output = storeMusic(contents, overwrite, utf8);
         output = output.join("\r\n");
-        download(output, f.name, "text/plain:charset=utf-8");
+        download(output, f.name, "text/plain:charset=" + (utf8? "utf-8": "euc-kr"));
       }
       r.readAsText(f, "ASCII");
     } else { 

@@ -30,21 +30,6 @@ body {
 
 hr { border: 0; border-top: 1px solid white; margin-left: -1em;}
 h3 { margin-left: -1em; }
-a { text-decoration: none; }
-.btn {
-	background-color: white;
-	padding: 5px 10px;
-	margin-top: -5px;
-}
 
 .hide {display:none;}
 .right {float:right;}
-
-/*#pn {
-  float: left;
-  margin-right: 0.5em;
-  white-space: nowrap;
-  width: 12em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}*/

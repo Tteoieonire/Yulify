@@ -3,8 +3,6 @@
 
 Attaches yullyeo reading of notes in nwctxt file as a lyric.
 
-Note 'index.html' is the main page, where a file and options are POSTed to 'yulify.php' where modification process occurs. The resulting file is downloaded via 'download.php'.
+Download.js is from https://github.com/rndme/download
 
-The image included is from https://www.flickr.com/photos/tonio_vega/6014538718 which follows CC BY-SA 2.0. A modification(reducing file size via additional jpeg compression) was made.
-
-Server admin may upload the 5 files (image file, download.php, index.html, yulify.css, yulify.php) into appropriate location.
+The image included is from https://www.flickr.com/photos/tonio_vega/6014538718 which follows CC BY-SA 2.0. A modification (file size reduction) was made.

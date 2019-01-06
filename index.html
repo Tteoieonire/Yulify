@@ -4,7 +4,10 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>Web App for Korean Traditional Music</title>
 	<link rel="stylesheet" type="text/css" href="./yulify.css">
+	<script src="./yulify.js"></script>
+	<script src="./download.js"></script>
 <script>
+
 function checkExt(el) {
 	var ext = el.value;
 	ext = ext.substring(ext.lastIndexOf('.'));
@@ -24,19 +27,50 @@ function checkExt(el) {
 		<h3>당신의 오선보 아래에, 율명을 적어 드립니다!</h3>
 		<p>※ 현재 이 프로그램은 .nwctxt 형식을 지원합니다. .nwc 파일의 경우 다시 열어서 '다른 이름으로 저장...'을 선택한 뒤 파일 형식을 NWC Text File로 지정해 주세요.</p>
 		<p class='hide' style='color:orange;' id='f_notice'>죄송합니다. nwctxt 파일을 선택해 주십시오.</p>
-		<form name='p' enctype="multipart/form-data" action="yulify.php" method="post">
-			<p><input type="file" name="f" accept=".nwctxt" onchange="checkExt(this);"></p>
-			<p class='hide' id='f_wrap'>
-				<input type="checkbox" name="d" id="d" value="1">
-				<label for="d">음률을 마지막 가사에 덮어써도 되나요?</label>
-				<br>
-				<input type="checkbox" name="utf8" id="utf8" value="1">
-				<label for="utf8">UTF-8 인코딩 쓰세요? (NWC 1.7 이상이면 그럴 거예요)</label>
-				<br>
-				<input type="hidden" name="s" value="1">
-				<a class='btn right' href='javascript: document.p.submit();'>다음 &gt;</a>
+
+		<p><input type="file" id="myfile" accept=".nwctxt" onchange="checkExt(this);"></p>
+
+		<div class='hide' id='f_wrap'>
+			<p>
+			<label>
+				<input type="checkbox" id="overwrite">
+				음률을 마지막 가사에 덮어써도 되나요?
+			</label>
+			</p><p>
+			<label>
+				<input type="checkbox" id="utf8">
+				UTF-8 인코딩 쓰세요? (NWC 1.7 이상이면 그럴 거예요)
+			</label>
 			</p>
-		</form>
+			<button id="mybtn" class='right'>확인</button>
+		</div>
 	</div>
 </body>
+
+
+<script>
+  
+  function process () {
+    var f = document.getElementById("myfile").files[0];
+
+    if (f) {
+      var r = new FileReader();
+      r.onload = function (e) {
+        var contents = e.target.result.split("\r\n");
+
+        var overwrite = document.getElementById("overwrite").checked;
+        var utf8 = document.getElementById("utf8").checked;
+
+        var output = storeMusic(contents, overwrite, utf8);
+        output = output.join("\r\n");
+        download(output, f.name, "text/plain:charset=utf-8");
+      }
+      r.readAsText(f, "ASCII");
+    } else { 
+      alert("Failed to load file");
+    }
+  }
+  document.getElementById("mybtn").addEventListener("click", process);
+//utf-8
+</script>
 </html>

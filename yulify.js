@@ -1,10 +1,10 @@
-﻿/**
+/**
  * (data, how_much_modified) pair
  */
 
 function organize(s) { return s.toLowerCase().replace(' ', ''); }
 
-function storeMusic(data, overwrite, utf8) {
+function storeMusic(data, overwrite, utf8, hangeul) {
 	var data_obj = { data: data, lines_added: 0 };
 	var lyric = [];
 	var lyric_obj = { lyric_no: 0, line_index: 0 };
@@ -43,18 +43,22 @@ function storeMusic(data, overwrite, utf8) {
 				break;
 
 			case "clef":
+				clef = 0;
 				line.forEach(function (word) {
 					var t = word.split(':');
 					if (t[0] == "type") {
 						switch (t[1]) {	// position of C4 in the staff
-							case "treble": clef = -6; break;
+							case "treble": clef += -6; break;
 							case "percussion":
-							case "bass": clef = +6; break;
-							case "alto": clef = 0; break;
-							case "tenor": clef = +2; break;
+							case "bass": clef += +6; break;
+							case "alto": clef += 0; break;
+							case "tenor": clef += +2; break;
 							default:
 								throw "Clef type not supported: " + t[1];
 						}
+					} else if (t[0] == "octaveshift") {
+						if (t[1] == "octaveup") clef -= 7;
+						else clef += 7;
 					}
 				});
 				break;
@@ -147,7 +151,7 @@ function storeMusic(data, overwrite, utf8) {
 				}
 
 				// pile up lyrics, starting from this one
-				content = lyrProc(content, utf8);
+				content = lyrProc(content, utf8, hangeul);
 				if (flag & 1 && visible <= 0) {
 					grace.push(content);
 				} else {
@@ -239,8 +243,10 @@ function getPitch(match, clef, accidental, tie) {
 	else accfinal = accidental[dia];		// use current setting
 
 	// calculate the pitch
+	var octave = 5 + Math.floor((pos - clef) / 7)
+
 	var r = [0, 2, 4, 5, 7, 9, 11];	// distances of CDEFGAB from C
-	var chr = (r[dia] + accfinal) % 12;
+	var chr = r[dia] + accfinal + 12 * octave;
 
 	// dealing with tie
 	var tie_out = match[3];
@@ -261,25 +267,39 @@ function getPitch(match, clef, accidental, tie) {
 }
 
 // lyrProc: array of integer (midi pitch) => string (율명)
-function lyrProc(pitches, utf8) {
+function lyrProc(pitches, utf8, hangeul) {
 	//*
-	var table = [
-		["\xb3\xb2", "\xb9\xab", "\xc0\xc0", "\xc8\xb2", "\xb4\xeb", "\xc5\xc2",
-			"\xc7\xf9", "\xb0\xed", "\xc1\xdf", "\xc0\xaf", "\xc0\xd3", "\xc0\xcc"],
-		["\xEB\x82\xA8", "\xEB\xAC\xB4", "\xEC\x9D\x91", "\xED\x99\xA9", "\xEB\x8C\x80", "\xED\x83\x9C",
-			"\xED\x98\x91", "\xEA\xB3\xA0", "\xEC\xA4\x91", "\xEC\x9C\xA0", "\xEC\x9E\x84", "\xEC\x9D\xB4"]
-		];		// "남", "무", "응", "황", "대", "태", "협", "고", "중", "유", "임", "이"
-	table = table[utf8? 1: 0];
-	/*/
-	var table = ["남", "무", "응", "황", "대", "태", "협", "고", "중", "유", "임", "이"];
-	//*/
+	if (hangeul){
+		var table = [
+			["\xb3\xb2", "\xb9\xab", "\xc0\xc0", "\xc8\xb2", "\xb4\xeb", "\xc5\xc2",
+				"\xc7\xf9", "\xb0\xed", "\xc1\xdf", "\xc0\xaf", "\xc0\xd3", "\xc0\xcc"],
+			["\xEB\x82\xA8", "\xEB\xAC\xB4", "\xEC\x9D\x91", "\xED\x99\xA9", "\xEB\x8C\x80", "\xED\x83\x9C",
+				"\xED\x98\x91", "\xEA\xB3\xA0", "\xEC\xA4\x91", "\xEC\x9C\xA0", "\xEC\x9E\x84", "\xEC\x9D\xB4"]
+			];		// "남", "무", "응", "황", "대", "태", "협", "고", "중", "유", "임", "이"
+		table = table[utf8? 1: 0];
 
-	pitches = pitches.reverse();
-	pitches = pitches.map(function (pitch) {
-		pitch = pitch % 12;
-		if (pitch < 0) pitch += 12;
-		return table[pitch];
-	});
+		pitches = pitches.reverse();
+		pitches = pitches.map(function (pitch) {
+			pitch = pitch % 12;
+			return table[pitch];
+		});
+	} else {
+		var table = ['\xe3\xa3\xb4', '\xe3\xa3\x95', '\xe3\xa3\x96', '\xe3\xa3\xa3', '\xe3\xa3\xa8', '\xe3\xa3\xa1', '\xe3\xa3\xb8', '\xe3\xa3\xa9', '\xf0\xa2\x93\xa1', '\xe3\xa3\xae', '\xe3\xa3\xb3', '\xe3\xa3\xb9', '\xe5\x83\x99', '\xe3\x90\xb2', '\xe3\x91\x80', '\xe4\xbf\xa0', '\xe3\x91\xac', '\xe3\x91\x96', '\xf0\xa0\x90\xad', '\xe3\x91\xa3', '\xe4\xbe\x87', '\xe3\x91\xb2', '\xe3\x92\x87', '\xe3\x92\xa3', '\xe9\xbb\x83', '\xe5\xa4\xa7', '\xe5\xa4\xaa', '\xe5\xa4\xbe', '\xe5\xa7\x91', '\xe4\xbb\xb2', '\xe8\x95\xa4', '\xef\xa7\xb4', '\xe5\xa4\xb7', '\xe5\x8d\x97', '\xe7\x84\xa1', '\xe6\x87\x89', '\xe6\xbd\xa2', '\xe6\xb1\x8f', '\xe6\xb1\xb0', '\xe6\xb5\xb9', '\xe3\xb4\x8c', '\xe3\xb3\x9e', '\xe3\xb6\x8b', '\xe6\xb7\x8b', '\xe6\xb4\x9f', '\xe6\xb9\xb3', '\xe6\xbd\x95', '\xe3\xb6\x90', '\xe3\xb6\x82', '\xf0\xa3\xb4\x98', '\xe3\xb3\xb2', '\xe3\xb4\xba', '\xe3\xb5\x88', '\xe3\xb4\xa2', '\xe3\xb6\x99', '\xe3\xb5\x89', '\xe3\xb4\xa3', '\xe3\xb5\x9c', '\xe3\xb6\x83', '\xe3\xb6\x9d']
+		pitches = pitches.map(function (pitch) {
+			if (39 <= pitch && pitch < 99) {
+				return table[pitch - 39];
+			}
+			var main = table[24 + (pitch + 9) % 12]
+			var oct = Math.floor((pitch - 63) / 12)
+			var char = oct < 0? '/': ';'
+			oct = oct < 0? -oct: oct;
+			var prefix = ''
+			for (var i=0; i<oct; i++) {
+				prefix += char
+			}
+			return prefix + main
+		})
+	}
 
 	var len = pitches.length;
 	if (len > 1)

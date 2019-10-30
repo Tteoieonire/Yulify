@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko-KR">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -20,6 +20,11 @@ function checkExt(el) {
 		el.value = "";
 	}
 }
+
+  function toggle_hanja() {
+	var hide = document.getElementById('utf8').checked? '': 'hide'
+	document.getElementById('hanja_option').className = hide
+  }
 </script>
 </head>
 <body>
@@ -38,8 +43,13 @@ function checkExt(el) {
 			</label>
 			</p><p>
 			<label>
-				<input type="checkbox" id="utf8">
+				<input type="checkbox" id="utf8" onchange="toggle_hanja();">
 				UTF-8 인코딩 쓰세요? (NWC 1.7 이상이면 그럴 거예요)
+			</label>
+			</p><p class='hide' id='hanja_option'>
+			<label>
+				<input type="checkbox" id="hanja">
+				율명을 한자로 적을까요?
 			</label>
 			</p>
 			<button id="mybtn" class='right'>확인</button>
@@ -49,7 +59,8 @@ function checkExt(el) {
 
 
 <script>
-  
+  toggle_hanja()
+
   function process () {
     var f = document.getElementById("myfile").files[0];
 
@@ -60,8 +71,9 @@ function checkExt(el) {
 
         var overwrite = document.getElementById("overwrite").checked;
         var utf8 = document.getElementById("utf8").checked;
+        var hanja = utf8 && document.getElementById("hanja").checked;
 
-        var output = storeMusic(contents, overwrite, utf8);
+        var output = storeMusic(contents, overwrite, utf8, !hanja);
         output = output.join("\r\n");
         download(output, f.name, "text/plain:charset=" + (utf8? "utf-8": "euc-kr"));
       }
@@ -71,6 +83,6 @@ function checkExt(el) {
     }
   }
   document.getElementById("mybtn").addEventListener("click", process);
-//utf-8
+
 </script>
 </html>
